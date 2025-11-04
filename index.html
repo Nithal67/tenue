@@ -332,35 +332,33 @@ function chargerTenues(){
 }
 
 function afficherTenueData(data, id){
-  const div=document.getElementById(id);
-  div.innerHTML='';
-  if(!data || !data.cherie) { 
-    div.innerHTML='<p>Aucune tenue enregistrée.</p>'; 
-    return; 
+  const div = document.getElementById(id);
+  div.innerHTML = '';
+
+  // récupérer la première date disponible
+  const dates = Object.keys(data);
+  if(dates.length === 0){
+    div.innerHTML = '<p>Aucune tenue enregistrée.</p>';
+    return;
   }
 
-  for(const [type, srcs] of Object.entries(data.cherie)){
-    // si srcs est un tableau, parcourir chaque image
-    if(Array.isArray(srcs)){
-      srcs.forEach(src => {
-        const img=document.createElement('img');
-        img.src = src;
-        img.style.width="100%";
-        img.style.maxWidth="100px";
-        img.style.height="auto";
-        img.style.objectFit="cover";
-        div.appendChild(img);
-      });
-    } else {
-      // si c'est juste une string (ancienne version)
-      const img=document.createElement('img');
-      img.src = srcs;
-      img.style.width="100%";
-      img.style.maxWidth="100px";
-      img.style.height="auto";
-      img.style.objectFit="cover";
-      div.appendChild(img);
-    }
+  const dateObj = data[dates[0]]; // ex: { cherie: { haut: "..." } }
+
+  if(!dateObj.cherie) {
+    div.innerHTML = '<p>Aucune tenue enregistrée.</p>';
+    return;
+  }
+
+  const tenue = dateObj.cherie;
+
+  for(const [type, src] of Object.entries(tenue)){
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.width = "100%";
+    img.style.maxWidth = "100px";
+    img.style.height = "auto";
+    img.style.objectFit = "cover";
+    div.appendChild(img);
   }
 }
 </script>
