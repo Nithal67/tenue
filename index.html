@@ -443,7 +443,7 @@ function afficherLinge(){
 
 // 📨 Envoi du message au Webhook Discord
 function envoyerMessageDiscord(message) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("TON_WEBHOOK_ICI")) {
+  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("https://tenue-1.onrender.com")) {
     console.warn("⚠️ Webhook Discord non configuré !");
     return;
   }
