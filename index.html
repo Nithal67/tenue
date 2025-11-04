@@ -214,6 +214,8 @@ const dossierImages = {
 
 const images = {};
 let typeEnCours = null;
+// STOCK GLOBAL DU LINGE
+const linge = {};
 
 function retourAccueil(){
   document.getElementById('doudou').classList.add('hidden');
@@ -314,84 +316,6 @@ function chargerTenues(){
     .catch(err => console.warn("Aucune tenue de demain :", err));
 }
 
-// Objet pour stocker les habits au linge
-const linge = {};
-
-// Ouvrir la modal du linge
-function ouvrirLinge() {
-  const grid = document.getElementById('imageGrid');
-  grid.innerHTML = '';
-
-  // Afficher tous les types d'habits présents dans la tenue
-  for (const [type, src] of Object.entries(images)) {
-    const container = document.createElement('div');
-    container.style.position = 'relative';
-    container.style.display = 'inline-block';
-
-    const img = document.createElement('img');
-    img.src = src;
-    img.style.width = '80px';
-    img.style.height = '80px';
-    img.style.objectFit = 'cover';
-    img.style.borderRadius = '10px';
-    img.style.opacity = linge[type] ? 0.4 : 1; // visuel pour linge
-
-    // Cliquer pour mettre/enlever du linge
-    img.onclick = () => {
-      if (linge[type]) {
-        delete linge[type];
-        img.style.opacity = 1;
-      } else {
-        linge[type] = src;
-        img.style.opacity = 0.4;
-      }
-      afficherLinge();
-    };
-
-    container.appendChild(img);
-    grid.appendChild(container);
-  }
-
-  document.getElementById('titreSelection').textContent = '🧺 Gérer le linge';
-  document.getElementById('modal').style.display = 'flex';
-}
-
-// Affichage du linge dans Chérie
-function afficherLinge() {
-  const div = document.getElementById('lingeContainer');
-  div.innerHTML = '';
-  for (const src of Object.values(linge)) {
-    const img = document.createElement('img');
-    img.src = src;
-    img.style.width = '80px';
-    img.style.height = '80px';
-    img.style.objectFit = 'cover';
-    img.style.margin = '5px';
-    img.style.opacity = 0.6;
-    div.appendChild(img);
-  }
-}
-
-function ouvrirSelection(type){
-  typeEnCours = type;
-  document.getElementById('titreSelection').textContent = "Choisir un(e) " + type;
-  const grid = document.getElementById('imageGrid');
-  grid.innerHTML='';
-
-  for(let i=1;i<=5;i++){
-    const imgSrc = dossierImages[type]+type+i+".jpg";
-
-    // ne pas afficher si habit dans le linge
-    if(Object.values(linge).includes(imgSrc)) continue;
-
-    const img = document.createElement('img');
-    img.src = imgSrc;
-    img.onclick = () => choisirImage(type, img.src);
-    grid.appendChild(img);
-  }
-  document.getElementById('modal').style.display='flex';
-}
-
 function afficherTenueData(data, id){
   const div=document.getElementById(id);
   div.innerHTML='';
@@ -423,6 +347,49 @@ function afficherTenueData(data, id){
       div.appendChild(img);
     }
   }
+}
+
+function ouvrirLinge() {
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML = '';
+
+  // Parcourir tous les types d'habits
+  for (const type of Object.keys(dossierImages)) {
+    // Pour chaque type, afficher 5 images (type1.jpg → type5.jpg)
+    for (let i = 1; i <= 5; i++) {
+      const src = dossierImages[type] + type + i + ".jpg";
+
+      const container = document.createElement('div');
+      container.style.position = 'relative';
+      container.style.display = 'inline-block';
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.width = '80px';
+      img.style.height = '80px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '10px';
+      img.style.opacity = linge[src] ? 0.4 : 1; // si dans le linge, atténuer
+
+      // Cliquer pour mettre/enlever du linge
+      img.onclick = () => {
+        if (linge[src]) {
+          delete linge[src];
+          img.style.opacity = 1;
+        } else {
+          linge[src] = src;
+          img.style.opacity = 0.4;
+        }
+        afficherLinge();
+      };
+
+      container.appendChild(img);
+      grid.appendChild(container);
+    }
+  }
+
+  document.getElementById('titreSelection').textContent = '🧺 Gérer le linge';
+  document.getElementById('modal').style.display = 'flex';
 }
 </script>
 </body>
