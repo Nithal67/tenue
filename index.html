@@ -147,8 +147,8 @@ button:hover { transform: translateY(-2px); }
     <button onclick="ouvrirSelection('gilet')">🧥 Gilet</button>
     <button onclick="ouvrirSelection('veste')">🧥 Veste</button>
   </div>
-  <button onclick="sauverTenue()">💾 Sauver tenue du jour</button>
-  <button onclick="sauverTenueDemain()">🌞 Sauver tenue de demain</button>
+ <button onclick="sauverTenueServeur('doudou')">💾 Sauver tenue du jour</button>
+ <button onclick="sauverTenueServeur('doudou', true)">🌞 Sauver tenue de demain</button>
   <div class="preview" id="preview"></div>
 </div>
 
@@ -234,44 +234,61 @@ function afficherPreview(){
   }
 }
 
-function sauverTenue(){
-  const today=new Date().toLocaleDateString('fr-FR');
-  localStorage.setItem('tenue_'+today,JSON.stringify(images));
-  alert("💾 Tenue du "+today+" sauvegardée !");
-}
+function sauverTenueServeur(personne, pourDemain=false){
+  const dateObj = new Date();
+  if(pourDemain) dateObj.setDate(dateObj.getDate()+1);
+  const date = dateObj.toISOString().slice(0,10); // YYYY-MM-DD
 
-function sauverTenueDemain(){
-  const demain=new Date();
-  demain.setDate(demain.getDate()+1);
-  const dateDemain=demain.toLocaleDateString('fr-FR');
-  localStorage.setItem('tenue_'+dateDemain,JSON.stringify(images));
-  alert("🌞 Tenue du "+dateDemain+" sauvegardée !");
+  const payload = {
+    date: date,
+    personne: personne,
+    tenue: images
+  };
+
+  fetch('save_tenue.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.status==='ok'){
+      alert("💾 Tenue du "+date+" sauvegardée sur le serveur !");
+    } else {
+      alert("❌ Erreur : " + data.message);
+    }
+  })
+  .catch(err => { console.error(err); alert("❌ Erreur serveur"); });
 }
 
 function chargerTenues(){
-  const today=new Date();
-  const demain=new Date(today);
-  demain.setDate(today.getDate()+1);
-  afficherTenue('tenue_'+today.toLocaleDateString('fr-FR'),'tenueJour');
-  afficherTenue('tenue_'+demain.toLocaleDateString('fr-FR'),'tenueDemain');
+  fetch('tenues.json')
+    .then(res => res.json())
+    .then(data => {
+      const today = new Date().toISOString().slice(0,10);
+      const demain = new Date();
+      demain.setDate(demain.getDate()+1);
+      const dateDemain = demain.toISOString().slice(0,10);
+
+      afficherTenueData(data[today], 'tenueJour');
+      afficherTenueData(data[dateDemain], 'tenueDemain');
+    })
+    .catch(err => console.error(err));
 }
 
-function afficherTenue(key,id){
-  const div=document.getElementById(id);
+function afficherTenueData(data, id){
+  const div = document.getElementById(id);
   div.innerHTML='';
-  const data=localStorage.getItem(key);
-  if(data){
-    const tenues=JSON.parse(data);
-    for(const [type,src] of Object.entries(tenues)){
-      const img=document.createElement('img');
-      img.src=src;
-      img.style.width="100%";
-      img.style.maxWidth="100px";
-      img.style.height="auto";
-      img.style.objectFit="cover";
-      div.appendChild(img);
-    }
-  } else { div.innerHTML='<p>Aucune tenue enregistrée.</p>'; }
+  if(!data || !data.cherie) { div.innerHTML='<p>Aucune tenue enregistrée.</p>'; return; }
+  for(const [type,src] of Object.entries(data.cherie)){
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.width="100%";
+    img.style.maxWidth="100px";
+    img.style.height="auto";
+    img.style.objectFit="cover";
+    div.appendChild(img);
+  }
 }
 </script>
 </body>
