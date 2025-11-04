@@ -218,7 +218,7 @@ let typeEnCours = null;
 const linge = {};
 
 // 🔔 Ton Webhook Discord (⚠️ à remplacer par le tien)
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1435388719522779167/8uQsMdI_AnFgY5Zqq0GaocxU_0pKYr8cRh7vdXAsWC_89_lNLxw_95xSoPnjjJwrdhcg";
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1435391340002410508/iv0FVqsU6m5DHAtsx1QP6ouYv5fLmVbdljTXI0pqInCMLRGmkGiwbP9B8bBORmehdt6U";
 
 function retourAccueil(){
   document.getElementById('doudou').classList.add('hidden');
@@ -443,7 +443,7 @@ function afficherLinge(){
 
 // 📨 Envoi du message au Webhook Discord
 function envoyerMessageDiscord(message) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("https://discord.com/api/webhooks/1435388719522779167/8uQsMdI_AnFgY5Zqq0GaocxU_0pKYr8cRh7vdXAsWC_89_lNLxw_95xSoPnjjJwrdhcg")) {
+  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("TON_WEBHOOK_ICI")) {
     console.warn("⚠️ Webhook Discord non configuré !");
     return;
   }
