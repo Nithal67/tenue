@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sélecteur de tenue ✨</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500&display=swap');
@@ -21,12 +22,11 @@ body {
 /* Container de base */
 .container {
   border-radius: 20px;
-  padding: 30px;
-  max-width: 650px;
+  padding: 20px;
   width: 100%;
+  max-width: 650px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  transition: opacity 0.3s ease;
 }
 
 /* Typographie */
@@ -41,6 +41,8 @@ button {
   margin: 8px;
   cursor: pointer;
   font-size: 16px;
+  width: 100%;
+  max-width: 200px;
   transition: all 0.2s ease;
 }
 
@@ -53,15 +55,16 @@ button:hover { transform: translateY(-2px); }
 .preview, .image-grid, #tenueJour, #tenueDemain {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 12px;
+  gap: 10px;
   justify-items: center;
   margin-top: 15px;
+  width: 100%;
 }
 
 .preview img, .image-grid img {
   width: 100%;
   max-width: 100px;
-  height: 100px;
+  aspect-ratio: 1/1;
   object-fit: cover;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -89,8 +92,8 @@ button:hover { transform: translateY(-2px); }
 .modal-content {
   border-radius: 20px;
   padding: 20px;
-  max-width: 500px;
   width: 100%;
+  max-width: 500px;
   max-height: 80%;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
@@ -100,40 +103,35 @@ button:hover { transform: translateY(-2px); }
 .modal-content h3 { color: #4b0082; margin-bottom: 15px; }
 
 /* --- Couleurs spécifiques --- */
-/* Accueil */
 #accueil { background: #800020; color: #fff8f0; }
 #accueil button { background-color: #f5f0e1; color: #800020; }
 #accueil button:hover { background-color: #e0d5c4; }
 
-/* Chérie */
 #cherie { background: #1d4e89; color: #f9f6f0; }
 #cherie button { background-color: #4b6cb7; color: #f9f6f0; }
 #cherie button:hover { background-color: #3b5590; }
 
-/* Doudou */
 #doudou { background: #4b0082; color: #f9f6f0; }
 #doudou button { background-color: #f5f0e1; color: #008080; }
 #doudou button:hover { background-color: #005757; }
 
 /* --- Media queries pour mobile --- */
 @media screen and (max-width: 480px) {
-  .container { padding: 20px; }
-  button { padding: 10px 20px; font-size: 14px; }
-  .preview img, .image-grid img { height: 80px; max-width: 80px; }
+  .container { padding: 15px; }
+  button { font-size: 14px; padding: 10px; max-width: 100%; }
+  .preview img, .image-grid img { max-width: 80px; height: auto; }
   .modal-content { max-width: 90%; padding: 15px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Accueil -->
 <div id="accueil" class="container">
   <h1>Sélecteur de tenue ✨</h1>
   <button onclick="choisir('doudou')">Doudou 👨‍💻</button>
   <button onclick="choisir('cherie')">Chérie 💖</button>
 </div>
 
-<!-- Doudou -->
 <div id="doudou" class="container hidden">
   <div class="top-bar">
     <button onclick="retourAccueil()">⬅ Retour</button>
@@ -154,7 +152,6 @@ button:hover { transform: translateY(-2px); }
   <div class="preview" id="preview"></div>
 </div>
 
-<!-- Chérie -->
 <div id="cherie" class="container hidden">
   <div class="top-bar">
     <button onclick="retourAccueil()">⬅ Retour</button>
@@ -166,7 +163,6 @@ button:hover { transform: translateY(-2px); }
   <div id="tenueDemain"></div>
 </div>
 
-<!-- Modal -->
 <div id="modal" class="modal">
   <div class="modal-content">
     <h3 id="titreSelection"></h3>
@@ -271,7 +267,7 @@ function afficherTenue(key,id){
       img.src=src;
       img.style.width="100%";
       img.style.maxWidth="100px";
-      img.style.height="100px";
+      img.style.height="auto";
       img.style.objectFit="cover";
       div.appendChild(img);
     }
