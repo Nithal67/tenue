@@ -322,8 +322,10 @@ function exporterTenue(pourDemain=false){
 }
 
 function chargerTenues(){
+  const cacheBuster = "?v=" + new Date().getTime();
+
   // Tenue d'aujourd'hui
-  fetch('tenue_aujourdhui.json')
+  fetch('tenue_aujourdhui.json' + cacheBuster)
     .then(res => res.json())
     .then(data => {
       afficherTenueData(data, 'tenueJour');
@@ -331,7 +333,7 @@ function chargerTenues(){
     .catch(err => console.warn("Aucune tenue du jour :", err));
 
   // Tenue de demain
-  fetch('tenue_demain.json')
+  fetch('tenue_demain.json' + cacheBuster)
     .then(res => res.json())
     .then(data => {
       afficherTenueData(data, 'tenueDemain');
