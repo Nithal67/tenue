@@ -188,6 +188,9 @@ button:hover { transform: translateY(-2px); }
   <div id="tenueJour"></div>
   <h3>Tenue de demain :</h3>
   <div id="tenueDemain"></div>
+  <h3>Linge :</h3>
+<button onclick="ouvrirLinge()">🧺 Gérer le linge</button>
+<div id="lingeContainer"></div>
 </div>
 
 <div id="modal" class="modal">
@@ -220,41 +223,13 @@ function retourAccueil(){
 
 function choisir(personne){
   document.getElementById('accueil').classList.add('hidden');
-
   if(personne==='doudou'){
     document.getElementById('doudou').classList.remove('hidden');
     document.getElementById('date').textContent = "Nous sommes le " + new Date().toLocaleDateString('fr-FR');
   } else {
-    const divJour = document.getElementById('tenueJour');
-    const divDemain = document.getElementById('tenueDemain');
-
-    // vider les anciennes tenues
-    divJour.innerHTML = '';
-    divDemain.innerHTML = '';
-
     document.getElementById('cherie').classList.remove('hidden');
-    chargerTenues(); // recharger les fichiers JSON
+    chargerTenues();
   }
-}
-
-function ouvrirSelection(type){
-  typeEnCours = type;
-  document.getElementById('titreSelection').textContent = "Choisir un(e) " + type;
-  const grid = document.getElementById('imageGrid');
-  grid.innerHTML='';
-  for(let i=1;i<=5;i++){
-    const img=document.createElement('img');
-    img.src=dossierImages[type]+type+i+".jpg";
-    img.onclick=()=>choisirImage(type,img.src);
-    grid.appendChild(img);
-  }
-  document.getElementById('modal').style.display='flex';
-}
-
-function choisirImage(type,src){
-  images[type]=src;
-  afficherPreview();
-  fermerModal();
 }
 
 function fermerModal(){ document.getElementById('modal').style.display='none'; }
@@ -322,10 +297,8 @@ function exporterTenue(pourDemain=false){
 }
 
 function chargerTenues(){
-  const cacheBuster = "?v=" + new Date().getTime();
-
   // Tenue d'aujourd'hui
-  fetch('tenue_aujourdhui.json' + cacheBuster)
+  fetch('tenue_aujourdhui.json')
     .then(res => res.json())
     .then(data => {
       afficherTenueData(data, 'tenueJour');
@@ -333,7 +306,7 @@ function chargerTenues(){
     .catch(err => console.warn("Aucune tenue du jour :", err));
 
   // Tenue de demain
-  fetch('tenue_demain.json' + cacheBuster)
+  fetch('tenue_demain.json')
     .then(res => res.json())
     .then(data => {
       afficherTenueData(data, 'tenueDemain');
@@ -341,38 +314,116 @@ function chargerTenues(){
     .catch(err => console.warn("Aucune tenue de demain :", err));
 }
 
-function afficherTenueData(data, id){
-  const div = document.getElementById(id);
-  div.innerHTML = ''; // on vide avant affichage
+// Objet pour stocker les habits au linge
+const linge = {};
 
-  const dates = Object.keys(data).sort().reverse(); // la plus récente en premier
-  if(dates.length === 0){
-    div.innerHTML = '<p>Aucune tenue enregistrée.</p>';
-    return;
-  }
+// Ouvrir la modal du linge
+function ouvrirLinge() {
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML = '';
 
-  const lastDateObj = data[dates[0]];
-  if(!lastDateObj.cherie) {
-    div.innerHTML = '<p>Aucune tenue enregistrée.</p>';
-    return;
-  }
+  // Afficher tous les types d'habits présents dans la tenue
+  for (const [type, src] of Object.entries(images)) {
+    const container = document.createElement('div');
+    container.style.position = 'relative';
+    container.style.display = 'inline-block';
 
-  const tenue = lastDateObj.cherie;
-  for(const [type, src] of Object.entries(tenue)){
     const img = document.createElement('img');
     img.src = src;
-    img.style.width = "100%";
-    img.style.maxWidth = "100px";
-    img.style.height = "auto";
-    img.style.objectFit = "cover";
-    img.style.margin = "5px";
+    img.style.width = '80px';
+    img.style.height = '80px';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '10px';
+    img.style.opacity = linge[type] ? 0.4 : 1; // visuel pour linge
+
+    // Cliquer pour mettre/enlever du linge
+    img.onclick = () => {
+      if (linge[type]) {
+        delete linge[type];
+        img.style.opacity = 1;
+      } else {
+        linge[type] = src;
+        img.style.opacity = 0.4;
+      }
+      afficherLinge();
+    };
+
+    container.appendChild(img);
+    grid.appendChild(container);
+  }
+
+  document.getElementById('titreSelection').textContent = '🧺 Gérer le linge';
+  document.getElementById('modal').style.display = 'flex';
+}
+
+// Affichage du linge dans Chérie
+function afficherLinge() {
+  const div = document.getElementById('lingeContainer');
+  div.innerHTML = '';
+  for (const src of Object.values(linge)) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.width = '80px';
+    img.style.height = '80px';
+    img.style.objectFit = 'cover';
+    img.style.margin = '5px';
+    img.style.opacity = 0.6;
     div.appendChild(img);
   }
 }
 
-  window.onload = () => {
-  chargerTenues();
-};
+function ouvrirSelection(type){
+  typeEnCours = type;
+  document.getElementById('titreSelection').textContent = "Choisir un(e) " + type;
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML='';
+
+  for(let i=1;i<=5;i++){
+    const imgSrc = dossierImages[type]+type+i+".jpg";
+
+    // ne pas afficher si habit dans le linge
+    if(Object.values(linge).includes(imgSrc)) continue;
+
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.onclick = () => choisirImage(type, img.src);
+    grid.appendChild(img);
+  }
+  document.getElementById('modal').style.display='flex';
+}
+
+function afficherTenueData(data, id){
+  const div=document.getElementById(id);
+  div.innerHTML='';
+  if(!data || !data.cherie) { 
+    div.innerHTML='<p>Aucune tenue enregistrée.</p>'; 
+    return; 
+  }
+
+  for(const [type, srcs] of Object.entries(data.cherie)){
+    // si srcs est un tableau, parcourir chaque image
+    if(Array.isArray(srcs)){
+      srcs.forEach(src => {
+        const img=document.createElement('img');
+        img.src = src;
+        img.style.width="100%";
+        img.style.maxWidth="100px";
+        img.style.height="auto";
+        img.style.objectFit="cover";
+        div.appendChild(img);
+      });
+    } else {
+      // si c'est juste une string (ancienne version)
+      const img=document.createElement('img');
+      img.src = srcs;
+      img.style.width="100%";
+      img.style.maxWidth="100px";
+      img.style.height="auto";
+      img.style.objectFit="cover";
+      div.appendChild(img);
+    }
+  }
+}
 </script>
 </body>
 </html>
