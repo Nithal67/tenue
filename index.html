@@ -147,8 +147,8 @@ button:hover { transform: translateY(-2px); }
     <button onclick="ouvrirSelection('gilet')">🧥 Gilet</button>
     <button onclick="ouvrirSelection('veste')">🧥 Veste</button>
   </div>
- <button onclick="sauverTenueServeur('doudou')">💾 Sauver tenue du jour</button>
- <button onclick="sauverTenueServeur('doudou', true)">🌞 Sauver tenue de demain</button>
+<button onclick="exporterTenue()">💾 Exporter tenue du jour</button>
+<button onclick="exporterTenue(true)">🌞 Exporter tenue de demain</button>
   <div class="preview" id="preview"></div>
 </div>
 
@@ -234,33 +234,32 @@ function afficherPreview(){
   }
 }
 
-function sauverTenueServeur(personne, pourDemain=false){
+// --- Exporter la tenue du jour ---
+function exporterTenue(pourDemain=false){
   const dateObj = new Date();
   if(pourDemain) dateObj.setDate(dateObj.getDate()+1);
   const date = dateObj.toISOString().slice(0,10); // YYYY-MM-DD
 
-  const payload = {
-    date: date,
-    personne: personne,
-    tenue: images
-  };
+  // Prépare les données à exporter
+  const data = {};
+  data[date] = { cherie: images }; // ou doudou selon ton choix
 
-  fetch('save_tenue.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(data.status==='ok'){
-      alert("💾 Tenue du "+date+" sauvegardée sur le serveur !");
-    } else {
-      alert("❌ Erreur : " + data.message);
-    }
-  })
-  .catch(err => { console.error(err); alert("❌ Erreur serveur"); });
+  // Transforme en JSON
+  const json = JSON.stringify(data, null, 2);
+
+  // Crée un fichier téléchargeable
+  const blob = new Blob([json], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "tenues.json";
+  a.click();
+  URL.revokeObjectURL(url);
+
+  alert("💾 Tenue du "+date+" exportée en JSON !");
 }
 
+// --- Charger les tenues depuis un fichier JSON (tenues.json) ---
 function chargerTenues(){
   fetch('tenues.json')
     .then(res => res.json())
@@ -276,13 +275,17 @@ function chargerTenues(){
     .catch(err => console.error(err));
 }
 
+// --- Afficher la tenue dans une div ---
 function afficherTenueData(data, id){
-  const div = document.getElementById(id);
+  const div=document.getElementById(id);
   div.innerHTML='';
-  if(!data || !data.cherie) { div.innerHTML='<p>Aucune tenue enregistrée.</p>'; return; }
+  if(!data || !data.cherie) { 
+    div.innerHTML='<p>Aucune tenue enregistrée.</p>'; 
+    return; 
+  }
   for(const [type,src] of Object.entries(data.cherie)){
-    const img = document.createElement('img');
-    img.src = src;
+    const img=document.createElement('img');
+    img.src=src;
     img.style.width="100%";
     img.style.maxWidth="100px";
     img.style.height="auto";
