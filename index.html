@@ -236,6 +236,33 @@ function choisir(personne){
 
 function fermerModal(){ document.getElementById('modal').style.display='none'; }
 
+function ouvrirSelection(type){
+  typeEnCours = type;
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML = '';
+
+  for(let i=1; i<=5; i++){
+    const src = dossierImages[type] + type + i + ".jpg";
+
+    // Si le vêtement est dans le linge, ne pas l'afficher
+    if(Object.values(linge).includes(src)) continue;
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.cursor = 'pointer';
+    img.onclick = () => {
+      images[type] = src;
+      afficherPreview();
+      fermerModal();
+    };
+
+    grid.appendChild(img);
+  }
+
+  document.getElementById('titreSelection').textContent = "Choisir un(e) " + type;
+  document.getElementById('modal').style.display = 'flex';
+}
+
 function afficherPreview(){
   const preview = document.getElementById('preview');
   preview.innerHTML = '';
@@ -317,33 +344,35 @@ function chargerTenues(){
 }
 
 function afficherTenueData(data, id){
-  const div=document.getElementById(id);
-  div.innerHTML='';
-  if(!data || !data.cherie) { 
-    div.innerHTML='<p>Aucune tenue enregistrée.</p>'; 
-    return; 
+  const div = document.getElementById(id);
+  div.innerHTML = '';
+
+  const dateKey = Object.keys(data)[0]; // prendre la première date
+  const tenue = data[dateKey]?.cherie;
+
+  if(!tenue){
+    div.innerHTML = '<p>Aucune tenue enregistrée.</p>';
+    return;
   }
 
-  for(const [type, srcs] of Object.entries(data.cherie)){
-    // si srcs est un tableau, parcourir chaque image
+  for(const [type, srcs] of Object.entries(tenue)){
     if(Array.isArray(srcs)){
       srcs.forEach(src => {
-        const img=document.createElement('img');
+        const img = document.createElement('img');
         img.src = src;
-        img.style.width="100%";
-        img.style.maxWidth="100px";
-        img.style.height="auto";
-        img.style.objectFit="cover";
+        img.style.width = "100%";
+        img.style.maxWidth = "100px";
+        img.style.height = "auto";
+        img.style.objectFit = "cover";
         div.appendChild(img);
       });
     } else {
-      // si c'est juste une string (ancienne version)
-      const img=document.createElement('img');
+      const img = document.createElement('img');
       img.src = srcs;
-      img.style.width="100%";
-      img.style.maxWidth="100px";
-      img.style.height="auto";
-      img.style.objectFit="cover";
+      img.style.width = "100%";
+      img.style.maxWidth = "100px";
+      img.style.height = "auto";
+      img.style.objectFit = "cover";
       div.appendChild(img);
     }
   }
@@ -390,6 +419,21 @@ function ouvrirLinge() {
 
   document.getElementById('titreSelection').textContent = '🧺 Gérer le linge';
   document.getElementById('modal').style.display = 'flex';
+}
+
+function afficherLinge(){
+  const div = document.getElementById('lingeContainer');
+  div.innerHTML = '';
+  for(const src of Object.values(linge)){
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.width = '80px';
+    img.style.height = '80px';
+    img.style.objectFit = 'cover';
+    img.style.margin = '5px';
+    img.style.opacity = 0.6;
+    div.appendChild(img);
+  }
 }
 </script>
 </body>
