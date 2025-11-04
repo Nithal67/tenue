@@ -331,7 +331,6 @@ function chargerTenues(){
     .catch(err => console.warn("Aucune tenue de demain :", err));
 }
 
-// --- Afficher la tenue dans une div ---
 function afficherTenueData(data, id){
   const div=document.getElementById(id);
   div.innerHTML='';
@@ -339,14 +338,29 @@ function afficherTenueData(data, id){
     div.innerHTML='<p>Aucune tenue enregistrée.</p>'; 
     return; 
   }
-  for(const [type,src] of Object.entries(data.cherie)){
-    const img=document.createElement('img');
-    img.src=src;
-    img.style.width="100%";
-    img.style.maxWidth="100px";
-    img.style.height="auto";
-    img.style.objectFit="cover";
-    div.appendChild(img);
+
+  for(const [type, srcs] of Object.entries(data.cherie)){
+    // si srcs est un tableau, parcourir chaque image
+    if(Array.isArray(srcs)){
+      srcs.forEach(src => {
+        const img=document.createElement('img');
+        img.src = src;
+        img.style.width="100%";
+        img.style.maxWidth="100px";
+        img.style.height="auto";
+        img.style.objectFit="cover";
+        div.appendChild(img);
+      });
+    } else {
+      // si c'est juste une string (ancienne version)
+      const img=document.createElement('img');
+      img.src = srcs;
+      img.style.width="100%";
+      img.style.maxWidth="100px";
+      img.style.height="auto";
+      img.style.objectFit="cover";
+      div.appendChild(img);
+    }
   }
 }
 </script>
