@@ -15,6 +15,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 10px;
 }
 
 /* Container de base */
@@ -22,7 +23,7 @@ body {
   border-radius: 20px;
   padding: 30px;
   max-width: 650px;
-  width: 90%;
+  width: 100%;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   transition: opacity 0.3s ease;
@@ -51,14 +52,15 @@ button:hover { transform: translateY(-2px); }
 /* Image grids et preview */
 .preview, .image-grid, #tenueJour, #tenueDemain {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 12px;
   justify-items: center;
   margin-top: 15px;
 }
 
 .preview img, .image-grid img {
-  width: 100px;
+  width: 100%;
+  max-width: 100px;
   height: 100px;
   object-fit: cover;
   border-radius: 15px;
@@ -81,12 +83,14 @@ button:hover { transform: translateY(-2px); }
   display: none;
   justify-content: center;
   align-items: center;
+  padding: 10px;
 }
 
 .modal-content {
   border-radius: 20px;
   padding: 20px;
-  max-width: 90%;
+  max-width: 500px;
+  width: 100%;
   max-height: 80%;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
@@ -108,9 +112,16 @@ button:hover { transform: translateY(-2px); }
 
 /* Doudou */
 #doudou { background: #4b0082; color: #f9f6f0; }
-#doudou button { background-color: white; color: #008080; }
+#doudou button { background-color: #f5f0e1; color: #008080; }
 #doudou button:hover { background-color: #005757; }
 
+/* --- Media queries pour mobile --- */
+@media screen and (max-width: 480px) {
+  .container { padding: 20px; }
+  button { padding: 10px 20px; font-size: 14px; }
+  .preview img, .image-grid img { height: 80px; max-width: 80px; }
+  .modal-content { max-width: 90%; padding: 15px; }
+}
 </style>
 </head>
 <body>
@@ -258,7 +269,8 @@ function afficherTenue(key,id){
     for(const [type,src] of Object.entries(tenues)){
       const img=document.createElement('img');
       img.src=src;
-      img.style.width="100px";
+      img.style.width="100%";
+      img.style.maxWidth="100px";
       img.style.height="100px";
       img.style.objectFit="cover";
       div.appendChild(img);
@@ -268,4 +280,3 @@ function afficherTenue(key,id){
 </script>
 </body>
 </html>
-
