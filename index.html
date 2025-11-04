@@ -150,6 +150,12 @@ button:hover { transform: translateY(-2px); }
   .modal-content { max-width: 90%; padding: 15px; }
 }
 </style>
+  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init("y-NA0J29JT2tMENHP"); // fourni par EmailJS
+   })();
+</script>
 </head>
 <body>
 
@@ -216,9 +222,6 @@ const images = {};
 let typeEnCours = null;
 // STOCK GLOBAL DU LINGE
 const linge = {};
-
-// 🔔 Ton Webhook Discord (⚠️ à remplacer par le tien)
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1435391340002410508/iv0FVqsU6m5DHAtsx1QP6ouYv5fLmVbdljTXI0pqInCMLRGmkGiwbP9B8bBORmehdt6U";
 
 function retourAccueil(){
   document.getElementById('doudou').classList.add('hidden');
@@ -403,19 +406,19 @@ function ouvrirLinge() {
       img.style.opacity = linge[src] ? 0.4 : 1;
 
       // 👇 CLIC : ajout / retrait + envoi Discord
-      img.onclick = () => {
-        const estDansLinge = !!linge[src];
-        if (estDansLinge) {
-          delete linge[src];
-          img.style.opacity = 1;
-          envoyerMessageDiscord(`❌ Retiré du linge : ${src}`);
-        } else {
-          linge[src] = src;
-          img.style.opacity = 0.4;
-          envoyerMessageDiscord(`✅ Ajouté au linge : ${src}`);
-        }
-        afficherLinge();
-      };
+    img.onclick = () => {
+  const estDansLinge = !!linge[src];
+  if (estDansLinge) {
+    delete linge[src];
+    img.style.opacity = 1;
+    envoyerEmail(`❌ Retiré du linge : ${src}`);
+  } else {
+    linge[src] = src;
+    img.style.opacity = 0.4;
+    envoyerEmail(`✅ Ajouté au linge : ${src}`);
+  }
+  afficherLinge();
+};
 
       container.appendChild(img);
       grid.appendChild(container);
@@ -441,23 +444,12 @@ function afficherLinge(){
   }
 }
 
-// 📨 Envoi du message au Webhook Discord
-function envoyerMessageDiscord(message) {
-  if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("https://tenue-1.onrender.com")) {
-    console.warn("⚠️ Webhook Discord non configuré !");
-    return;
-  }
-
-  fetch(DISCORD_WEBHOOK_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content: message })
+function envoyerEmail(message) {
+  emailjs.send("service_uz0clti", "template_wc2cw7l", {
+    action: message
   })
-  .then(res => {
-    if (!res.ok) throw new Error("Erreur d'envoi");
-    console.log("✅ Message envoyé sur Discord :", message);
-  })
-  .catch(err => console.error("❌ Erreur Discord :", err));
+  .then(() => console.log("✅ Email envoyé :", message))
+  .catch(err => console.error("❌ Erreur Email :", err));
 }
 </script>
 </body>
