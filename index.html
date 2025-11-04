@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Sélecteur de tenue ✨</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin:0; padding:0; }
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #f6f1ed; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Container de base */
+.container {
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 650px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  transition: opacity 0.3s ease;
+}
+
+/* Typographie */
+h1, h2, h3 { font-family: 'Playfair Display', serif; margin-bottom: 20px; }
+p { margin-bottom: 20px; }
+
+/* Boutons */
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 25px;
+  margin: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+button:hover { transform: translateY(-2px); }
+
+/* Masquer les écrans par défaut */
+.hidden { display: none !important; }
+
+/* Image grids et preview */
+.preview, .image-grid, #tenueJour, #tenueDemain {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  justify-items: center;
+  margin-top: 15px;
+}
+
+.preview img, .image-grid img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.preview img:hover, .image-grid img:hover { transform: scale(1.05); }
+
+/* Top-bar */
+.top-bar { text-align: left; margin-bottom: 15px; }
+
+/* Modal */
+.modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background-color: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 90%;
+  max-height: 80%;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  background: #f9f6f0;
+}
+
+.modal-content h3 { color: #4b0082; margin-bottom: 15px; }
+
+/* --- Couleurs spécifiques --- */
+/* Accueil */
+#accueil { background: #800020; color: #fff8f0; }
+#accueil button { background-color: #f5f0e1; color: #800020; }
+#accueil button:hover { background-color: #e0d5c4; }
+
+/* Chérie */
+#cherie { background: #1d4e89; color: #f9f6f0; }
+#cherie button { background-color: #4b6cb7; color: #f9f6f0; }
+#cherie button:hover { background-color: #3b5590; }
+
+/* Doudou */
+#doudou { background: #4b0082; color: #f9f6f0; }
+#doudou button { background-color: white; color: #008080; }
+#doudou button:hover { background-color: #005757; }
+
+</style>
+</head>
+<body>
+
+<!-- Accueil -->
+<div id="accueil" class="container">
+  <h1>Sélecteur de tenue ✨</h1>
+  <button onclick="choisir('doudou')">Doudou 👨‍💻</button>
+  <button onclick="choisir('cherie')">Chérie 💖</button>
+</div>
+
+<!-- Doudou -->
+<div id="doudou" class="container hidden">
+  <div class="top-bar">
+    <button onclick="retourAccueil()">⬅ Retour</button>
+  </div>
+  <h2>Bonjour Doudou 💪</h2>
+  <p id="date"></p>
+  <div id="selection">
+    <button onclick="ouvrirSelection('haut')">👕 Haut</button>
+    <button onclick="ouvrirSelection('soutien')">👙 Soutien-gorge</button>
+    <button onclick="ouvrirSelection('culotte')">🩲 Culotte</button>
+    <button onclick="ouvrirSelection('pantalon')">👖 Pantalon</button>
+    <button onclick="ouvrirSelection('chaussettes')">🧦 Chaussettes</button>
+    <button onclick="ouvrirSelection('gilet')">🧥 Gilet</button>
+    <button onclick="ouvrirSelection('veste')">🧥 Veste</button>
+  </div>
+  <button onclick="sauverTenue()">💾 Sauver tenue du jour</button>
+  <button onclick="sauverTenueDemain()">🌞 Sauver tenue de demain</button>
+  <div class="preview" id="preview"></div>
+</div>
+
+<!-- Chérie -->
+<div id="cherie" class="container hidden">
+  <div class="top-bar">
+    <button onclick="retourAccueil()">⬅ Retour</button>
+  </div>
+  <h2>Coucou Chérie 💋</h2>
+  <h3>Tenue du jour :</h3>
+  <div id="tenueJour"></div>
+  <h3>Tenue de demain :</h3>
+  <div id="tenueDemain"></div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h3 id="titreSelection"></h3>
+    <div class="image-grid" id="imageGrid"></div>
+    <button onclick="fermerModal()">Fermer</button>
+  </div>
+</div>
+
+<script>
+const dossierImages = {
+  haut: "images/hauts/",
+  soutien: "images/soutiens/",
+  culotte: "images/culottes/",
+  pantalon: "images/pantalons/",
+  chaussettes: "images/chaussettes/",
+  gilet: "images/gilets/",
+  veste: "images/vestes/"
+};
+
+const images = {};
+let typeEnCours = null;
+
+function retourAccueil(){
+  document.getElementById('doudou').classList.add('hidden');
+  document.getElementById('cherie').classList.add('hidden');
+  document.getElementById('accueil').classList.remove('hidden');
+}
+
+function choisir(personne){
+  document.getElementById('accueil').classList.add('hidden');
+  if(personne==='doudou'){
+    document.getElementById('doudou').classList.remove('hidden');
+    document.getElementById('date').textContent = "Nous sommes le " + new Date().toLocaleDateString('fr-FR');
+  } else {
+    document.getElementById('cherie').classList.remove('hidden');
+    chargerTenues();
+  }
+}
+
+function ouvrirSelection(type){
+  typeEnCours = type;
+  document.getElementById('titreSelection').textContent = "Choisir un(e) " + type;
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const img=document.createElement('img');
+    img.src=dossierImages[type]+type+i+".jpg";
+    img.onclick=()=>choisirImage(type,img.src);
+    grid.appendChild(img);
+  }
+  document.getElementById('modal').style.display='flex';
+}
+
+function choisirImage(type,src){
+  images[type]=src;
+  afficherPreview();
+  fermerModal();
+}
+
+function fermerModal(){ document.getElementById('modal').style.display='none'; }
+
+function afficherPreview(){
+  const preview=document.getElementById('preview');
+  preview.innerHTML='';
+  for(const [type,src] of Object.entries(images)){
+    const img=document.createElement('img');
+    img.src=src; img.alt=type;
+    preview.appendChild(img);
+  }
+}
+
+function sauverTenue(){
+  const today=new Date().toLocaleDateString('fr-FR');
+  localStorage.setItem('tenue_'+today,JSON.stringify(images));
+  alert("💾 Tenue du "+today+" sauvegardée !");
+}
+
+function sauverTenueDemain(){
+  const demain=new Date();
+  demain.setDate(demain.getDate()+1);
+  const dateDemain=demain.toLocaleDateString('fr-FR');
+  localStorage.setItem('tenue_'+dateDemain,JSON.stringify(images));
+  alert("🌞 Tenue du "+dateDemain+" sauvegardée !");
+}
+
+function chargerTenues(){
+  const today=new Date();
+  const demain=new Date(today);
+  demain.setDate(today.getDate()+1);
+  afficherTenue('tenue_'+today.toLocaleDateString('fr-FR'),'tenueJour');
+  afficherTenue('tenue_'+demain.toLocaleDateString('fr-FR'),'tenueDemain');
+}
+
+function afficherTenue(key,id){
+  const div=document.getElementById(id);
+  div.innerHTML='';
+  const data=localStorage.getItem(key);
+  if(data){
+    const tenues=JSON.parse(data);
+    for(const [type,src] of Object.entries(tenues)){
+      const img=document.createElement('img');
+      img.src=src;
+      img.style.width="100px";
+      img.style.height="100px";
+      img.style.objectFit="cover";
+      div.appendChild(img);
+    }
+  } else { div.innerHTML='<p>Aucune tenue enregistrée.</p>'; }
+}
+</script>
+</body>
+</html>
+
