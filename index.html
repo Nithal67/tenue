@@ -220,12 +220,20 @@ function retourAccueil(){
 
 function choisir(personne){
   document.getElementById('accueil').classList.add('hidden');
+
   if(personne==='doudou'){
     document.getElementById('doudou').classList.remove('hidden');
     document.getElementById('date').textContent = "Nous sommes le " + new Date().toLocaleDateString('fr-FR');
   } else {
+    const divJour = document.getElementById('tenueJour');
+    const divDemain = document.getElementById('tenueDemain');
+
+    // vider les anciennes tenues
+    divJour.innerHTML = '';
+    divDemain.innerHTML = '';
+
     document.getElementById('cherie').classList.remove('hidden');
-    chargerTenues();
+    chargerTenues(); // recharger les fichiers JSON
   }
 }
 
@@ -333,24 +341,21 @@ function chargerTenues(){
 
 function afficherTenueData(data, id){
   const div = document.getElementById(id);
-  div.innerHTML = '';
+  div.innerHTML = ''; // on vide avant affichage
 
-  // récupérer la première date disponible
-  const dates = Object.keys(data);
+  const dates = Object.keys(data).sort().reverse(); // la plus récente en premier
   if(dates.length === 0){
     div.innerHTML = '<p>Aucune tenue enregistrée.</p>';
     return;
   }
 
-  const dateObj = data[dates[0]]; // ex: { cherie: { haut: "..." } }
-
-  if(!dateObj.cherie) {
+  const lastDateObj = data[dates[0]];
+  if(!lastDateObj.cherie) {
     div.innerHTML = '<p>Aucune tenue enregistrée.</p>';
     return;
   }
 
-  const tenue = dateObj.cherie;
-
+  const tenue = lastDateObj.cherie;
   for(const [type, src] of Object.entries(tenue)){
     const img = document.createElement('img');
     img.src = src;
@@ -358,6 +363,7 @@ function afficherTenueData(data, id){
     img.style.maxWidth = "100px";
     img.style.height = "auto";
     img.style.objectFit = "cover";
+    img.style.margin = "5px";
     div.appendChild(img);
   }
 }
