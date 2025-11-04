@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // ⚙️ Configure ton bot
-const DISCORD_TOKEN = "TON_TOKEN_ICI";
+const DISCORD_TOKEN = "MTQzNTMxMTIwMjA5OTEzODY2MQ.Gbkx3J.wxWZbCvA0xNrG_zEkghu9_sicOWiYQ_Q8qwTaE";
 const CHANNEL_ID = "816721610269786142"; // clic droit sur le salon → "Copier l'identifiant" (activer le mode développeur Discord)
 
 // Initialise le client Discord
