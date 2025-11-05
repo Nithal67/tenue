@@ -150,11 +150,10 @@ button:hover { transform: translateY(-2px); }
   .modal-content { max-width: 90%; padding: 15px; }
 }
 </style>
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init("y-NA0J29JT2tMENHP"); // fourni par EmailJS
-   })();
+  <script type="module">
+  import emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+  emailjs.init("y-NA0J29JT2tMENHP");
+  window.emailjs = emailjs; // 👈 pour rendre emailjs accessible au reste du script
 </script>
 </head>
 <body>
