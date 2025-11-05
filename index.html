@@ -444,6 +444,40 @@ function afficherLinge(){
   }
 }
 
+// tableau pour accumuler les actions
+let actionsLinge = [];
+
+// fonction modifiée pour gérer le clic sur le linge
+function gérerClicLinge(src, img) {
+  const estDansLinge = !!linge[src];
+  if (estDansLinge) {
+    delete linge[src];
+    img.style.opacity = 1;
+    actionsLinge.push(`❌ Retiré du linge : ${src}`);
+  } else {
+    linge[src] = src;
+    img.style.opacity = 0.4;
+    actionsLinge.push(`✅ Ajouté au linge : ${src}`);
+  }
+  afficherLinge();
+}
+
+// remplacer l'ancien img.onclick par :
+img.onclick = () => gérerClicLinge(src, img);
+
+// modification de fermerModal pour envoyer le mail à ce moment
+function fermerModal() {
+  document.getElementById('modal').style.display = 'none';
+
+  if (actionsLinge.length > 0) {
+    // envoyer toutes les actions en un seul mail
+    const message = actionsLinge.join("\n");
+    envoyerEmail(message);
+    actionsLinge = []; // vider le tableau
+  }
+}
+
+// fonction envoyerEmail inchangée
 function envoyerEmail(message) {
   emailjs.send("service_uz0clti", "template_wc2cw7l", {
     action: message
