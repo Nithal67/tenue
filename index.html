@@ -150,11 +150,12 @@ button:hover { transform: translateY(-2px); }
   .modal-content { max-width: 90%; padding: 15px; }
 }
 </style>
-  <!-- ✅ Charger EmailJS moderne et l’exposer globalement -->
-<script type="module">
-  import * as emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
-  emailjs.init("y-NA0J29JT2tMENHP");
-  window.emailjs = emailjs; // ✅ accessible partout
+<!-- ✅ VERSION STABLE EmailJS, sans module -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  (function() {
+    emailjs.init("y-NA0J29JT2tMENHP"); // ton public key
+  })();
 </script>
 </head>
 <body>
