@@ -183,6 +183,9 @@ button:hover { transform: translateY(-2px); }
   </div>
 <button onclick="exporterTenue()">💾 Exporter tenue du jour</button>
 <button onclick="exporterTenue(true)">🌞 Exporter tenue de demain</button>
+<button onclick="ouvrirPanierDoudou()">🧺 Panier à linge</button>
+<h3>Linge actuel :</h3>
+<div id="lingeContainerDoudou"></div>
   <div class="preview" id="preview"></div>
 </div>
 
@@ -385,6 +388,45 @@ function afficherTenueData(data, id){
   }
 }
 
+function ouvrirPanierDoudou() {
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML = '';
+
+  // Même principe que pour Chérie
+  for (const type of Object.keys(dossierImages)) {
+    for (let i = 1; i <= 5; i++) {
+      const src = dossierImages[type] + type + i + ".jpg";
+
+      const container = document.createElement('div');
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.width = '80px';
+      img.style.height = '80px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '10px';
+      img.style.opacity = linge[src] ? 0.4 : 1;
+
+      img.onclick = () => {
+        const estDansLinge = !!linge[src];
+        if (estDansLinge) {
+          delete linge[src];
+          img.style.opacity = 1;
+        } else {
+          linge[src] = src;
+          img.style.opacity = 0.4;
+        }
+        afficherLinge();
+      };
+
+      container.appendChild(img);
+      grid.appendChild(container);
+    }
+  }
+
+  document.getElementById('titreSelection').textContent = '🧺 Panier à linge (Doudou)';
+  document.getElementById('modal').style.display = 'flex';
+}
+
 function ouvrirLinge() {
   const grid = document.getElementById('imageGrid');
   grid.innerHTML = '';
@@ -415,19 +457,25 @@ function ouvrirLinge() {
   document.getElementById('modal').style.display = 'flex';
 }
   
-function afficherLinge(){
-  const div = document.getElementById('lingeContainer');
-  div.innerHTML = '';
-  for(const src of Object.values(linge)){
-    const img = document.createElement('img');
-    img.src = src;
-    img.style.width = '80px';
-    img.style.height = '80px';
-    img.style.objectFit = 'cover';
-    img.style.margin = '5px';
-    img.style.opacity = 0.6;
-    div.appendChild(img);
-  }
+function afficherLinge() {
+  const divs = [
+    document.getElementById('lingeContainer'),
+    document.getElementById('lingeContainerDoudou')
+  ].filter(Boolean); // certains peuvent ne pas exister
+
+  divs.forEach(div => {
+    div.innerHTML = '';
+    for (const src of Object.values(linge)) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.width = '80px';
+      img.style.height = '80px';
+      img.style.objectFit = 'cover';
+      img.style.margin = '5px';
+      img.style.opacity = 0.6;
+      div.appendChild(img);
+    }
+  });
 }
 
 // tableau pour accumuler les actions
