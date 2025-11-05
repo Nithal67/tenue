@@ -395,9 +395,6 @@ function ouvrirLinge() {
       const src = dossierImages[type] + type + i + ".jpg";
 
       const container = document.createElement('div');
-      container.style.position = 'relative';
-      container.style.display = 'inline-block';
-
       const img = document.createElement('img');
       img.src = src;
       img.style.width = '80px';
@@ -406,20 +403,8 @@ function ouvrirLinge() {
       img.style.borderRadius = '10px';
       img.style.opacity = linge[src] ? 0.4 : 1;
 
-      // 👇 CLIC : ajout / retrait + envoi Discord
-    img.onclick = () => {
-  const estDansLinge = !!linge[src];
-  if (estDansLinge) {
-    delete linge[src];
-    img.style.opacity = 1;
-    envoyerEmail(`❌ Retiré du linge : ${src}`);
-  } else {
-    linge[src] = src;
-    img.style.opacity = 0.4;
-    envoyerEmail(`✅ Ajouté au linge : ${src}`);
-  }
-  afficherLinge();
-};
+      // 👇 Gère l'ajout/retrait, mais n'envoie pas d'email immédiatement
+      img.onclick = () => gérerClicLinge(src, img);
 
       container.appendChild(img);
       grid.appendChild(container);
@@ -429,7 +414,7 @@ function ouvrirLinge() {
   document.getElementById('titreSelection').textContent = '🧺 Gérer le linge';
   document.getElementById('modal').style.display = 'flex';
 }
-
+  
 function afficherLinge(){
   const div = document.getElementById('lingeContainer');
   div.innerHTML = '';
@@ -448,7 +433,6 @@ function afficherLinge(){
 // tableau pour accumuler les actions
 let actionsLinge = [];
 
-// fonction modifiée pour gérer le clic sur le linge
 function gérerClicLinge(src, img) {
   const estDansLinge = !!linge[src];
   if (estDansLinge) {
@@ -463,15 +447,13 @@ function gérerClicLinge(src, img) {
   afficherLinge();
 }
 
-// modification de fermerModal pour envoyer le mail à ce moment
 function fermerModal() {
   document.getElementById('modal').style.display = 'none';
 
   if (actionsLinge.length > 0) {
-    // envoyer toutes les actions en un seul mail
     const message = actionsLinge.join("\n");
     envoyerEmail(message);
-    actionsLinge = []; // vider le tableau
+    actionsLinge = []; // vider le tableau après envoi
   }
 }
 
