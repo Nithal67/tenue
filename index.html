@@ -150,10 +150,11 @@ button:hover { transform: translateY(-2px); }
   .modal-content { max-width: 90%; padding: 15px; }
 }
 </style>
-  <script type="module">
+  <!-- ✅ Charger EmailJS moderne et l’exposer globalement -->
+<script type="module">
   import emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
   emailjs.init("y-NA0J29JT2tMENHP");
-  window.emailjs = emailjs; // 👈 pour rendre emailjs accessible au reste du script
+  window.emailjs = emailjs; // 👈 Rendez-le accessible aux scripts classiques
 </script>
 </head>
 <body>
