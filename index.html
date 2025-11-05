@@ -152,9 +152,9 @@ button:hover { transform: translateY(-2px); }
 </style>
   <!-- ✅ Charger EmailJS moderne et l’exposer globalement -->
 <script type="module">
-  import emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+  import * as emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
   emailjs.init("y-NA0J29JT2tMENHP");
-  window.emailjs = emailjs; // 👈 Rendez-le accessible aux scripts classiques
+  window.emailjs = emailjs; // ✅ accessible partout
 </script>
 </head>
 <body>
@@ -461,9 +461,6 @@ function gérerClicLinge(src, img) {
   }
   afficherLinge();
 }
-
-// remplacer l'ancien img.onclick par :
-img.onclick = () => gérerClicLinge(src, img);
 
 // modification de fermerModal pour envoyer le mail à ce moment
 function fermerModal() {
