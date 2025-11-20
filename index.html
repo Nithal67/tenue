@@ -174,12 +174,8 @@ button:hover { transform: translateY(-2px); }
   <p id="date"></p>
   <div id="selection">
     <button onclick="ouvrirSelection('haut')">👕 Haut</button>
-    <button onclick="ouvrirSelection('soutien')">👙 Soutien-gorge</button>
-    <button onclick="ouvrirSelection('culotte')">🩲 Culotte</button>
     <button onclick="ouvrirSelection('pantalon')">👖 Pantalon</button>
-    <button onclick="ouvrirSelection('chaussettes')">🧦 Chaussettes</button>
     <button onclick="ouvrirSelection('gilet')">🧥 Gilet</button>
-    <button onclick="ouvrirSelection('veste')">🧥 Veste</button>
   </div>
 <button onclick="exporterTenue()">💾 Exporter tenue du jour</button>
 <button onclick="exporterTenue(true)">🌞 Exporter tenue de demain</button>
@@ -214,12 +210,8 @@ button:hover { transform: translateY(-2px); }
 <script>
 const dossierImages = {
   haut: "images/hauts/",
-  soutien: "images/soutiens/",
-  culotte: "images/culottes/",
   pantalon: "images/pantalons/",
-  chaussettes: "images/chaussettes/",
   gilet: "images/gilets/",
-  veste: "images/vestes/"
 };
 
 const images = {};
